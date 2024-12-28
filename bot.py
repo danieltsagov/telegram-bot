@@ -1,6 +1,5 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message
-from aiogram.utils import executor
 import asyncio
 
 API_TOKEN = "8028351293:AAExB4dg56uc8HsFKCyOs27ZGgK8EzEulrc"
@@ -13,7 +12,7 @@ dp = Dispatcher()
 # Обработчик команды /start
 @dp.message_handler(commands=["start"])  # Новый синтаксис
 async def start_handler(message: Message):
-    await message.reply("Привет! Я бот, который работает в фоновом режиме и пересылает ваши сообщения админам.")
+    await message.reply("Привет! Я бот, который работает в фоновом режиме.")
 
 # Фоновая задача
 async def periodic_task():
