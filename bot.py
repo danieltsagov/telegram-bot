@@ -1,35 +1,29 @@
-from aiogram import Bot, Dispatcher, types
-import logging
-from aiogram.utils import executor
-import os
+from flask import Flask
+import asyncio
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
 
-# Токен твоего бота, обязательно замени на свой!
-API_TOKEN = '8028351293:AAExB4dg56uc8HsFKCyOs27ZGgK8EzEulrc'
-
-# Твой Telegram ID
-CHAT_ID = '865376162'
-
-# Настройка логирования
-logging.basicConfig(level=logging.INFO)
-
-# Инициализация бота и диспетчера
+API_TOKEN = "8028351293:AAExB4dg56uc8HsFKCyOs27ZGgK8EzEulrc"
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 # Обработчик команды /start
-@dp.message_handler(commands=['start'])
-async def send_welcome(message: types.Message):
-    await message.reply("Привет! Отправь мне отзыв и я передам его админам!")
+@dp.message(commands=['start'])
+async def send_welcome(message: Message):
+    await message.answer("Привет! Я перешлю ваши сообщения админам.")
 
-# Обработчик команды /help
-@dp.message_handler(commands=['help'])
-async def send_help(message: types.Message):
-    await message.reply("Как я могу помочь? Просто отправь команду!")
+# Flask сервер для поддержки Web Service
+app = Flask(__name__)
 
-# Пример отправки сообщения на твой chat_id
-async def send_message_to_admin():
-    await bot.send_message(CHAT_ID, "Бот запущен и работает!")
+@app.route('/')
+def index():
+    return "Bot is running!"
 
-# Основной цикл запуска бота
-if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+async def run_bot():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    # Запускаем aiogram в asyncio
+    asyncio.get_event_loop().create_task(run_bot())
+    # Запуск Flask для работы Web Service
+    app.run(host='0.0.0.0', port=8080)
