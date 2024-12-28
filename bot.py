@@ -1,33 +1,35 @@
 from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-from aiogram import F
 import logging
+from aiogram.utils import executor
+import os
 
-# Токен от BotFather
-TOKEN = "8028351293:AAExB4dg56uc8HsFKCyOs27ZGgK8EzEulrc"
+# Токен твоего бота, обязательно замени на свой!
+API_TOKEN = '8028351293:AAExB4dg56uc8HsFKCyOs27ZGgK8EzEulrc'
+
 # Твой Telegram ID
-YOUR_CHAT_ID = 865376162
+CHAT_ID = '865376162'
 
-bot = Bot(token=TOKEN)
-dp = Dispatcher()
-
+# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 
-# Обработка команды /start
-@dp.message(Command("start"))
+# Инициализация бота и диспетчера
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher(bot)
+
+# Обработчик команды /start
+@dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
-    await message.reply("Привет! Напиши сообщение и я перешлю его админам.")
+    await message.reply("Привет! Отправь мне отзыв и я передам его админам!")
 
-# Пересылка любого сообщения
-@dp.message()
-async def forward_message(message: types.Message):
-    print(f"Получено сообщение от {message.from_user.username} с chat_id: {message.chat.id}")
-    await bot.forward_message(chat_id=YOUR_CHAT_ID, from_chat_id=message.chat.id, message_id=message.message_id)
+# Обработчик команды /help
+@dp.message_handler(commands=['help'])
+async def send_help(message: types.Message):
+    await message.reply("Как я могу помочь? Просто отправь команду!")
 
-# Запуск бота
-async def main():
-    await dp.start_polling(bot)
+# Пример отправки сообщения на твой chat_id
+async def send_message_to_admin():
+    await bot.send_message(CHAT_ID, "Бот запущен и работает!")
 
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+# Основной цикл запуска бота
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)
